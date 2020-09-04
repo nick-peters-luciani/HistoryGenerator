@@ -1,0 +1,22 @@
+﻿Classes
+=======
+HeightMap - stores the height value for each unit of land, from this lakes/rivers can be derived
+ClimateMap - stores the climate info for each unit of land (wet/dry, hot/cold), from this biomes can be derived
+ResourceMap - stores presence of special resources available for each unit of land
+
+HeightMapGenerator - generates a HeightMap using settings
+ClimateMapGenerator - generates a ClimateMap using settings
+ResourceMapGenerator - generates a ResourceMap using settings
+
+
+
+
+V2
+=======
+
+Map - Generic data structure to manage 2D array
+
+World - Encapsulates data about a world instance
+	+ Width : int
+	+ Height : int
+	+ MapData : Dictionary<string, Map> - Stores list of key assigned maps

@@ -1,0 +1,87 @@
+﻿A program that the user can interact with to procedurarlly generate an entire world history.
+This would include generating a world map, simulating civilizations on a large scale, creating 
+lore via battles, relationships, artifacts, enemies, weather, etc.
+
+1. World generation
+	a. Landmass/heightmap including rivers, lakes
+	b. Biomes
+	c. Special resources (plants, animals, minerals, etc)
+2. Civilization generation (to start with)
+	a. Location
+	b. Name
+	c. Characteristics (see below)
+	d. Population
+	e. Government type
+3. Simulation
+	a. Intra-civ
+		- Resource gathering
+		- Wealth
+		- Building
+		- Invention
+		- Expansion
+		- Traditions
+		- Organization
+		- Divisions
+	b. Inter-civ
+		- Alliances
+		- Attacks
+		- Trading (good and info)
+		- Stealing
+		- Treaties
+		- Unions
+
+
+Way to characterize a civ:
+1. OCEAN (big 5 personality)
+	- Openness
+		- Low: Uncurious, traditional, routine, uncreative
+		- High: Curious, progressive, exploratory, creative
+	- Conscientiousness
+		- Low: Disorganized, aimless, negligent, lazy
+		- High: Organized, goal-oriented, thoughtful, hard-working
+	- Extroversion
+		- Low: Passive, reserved, private
+		- High: Active, friendly, public
+	- Agreeableness
+		- Low: Unwilling, selfish, critical
+		- High: Lenient, selfless, good-natured 
+	- Neuroticism
+		- Low: Peaceful, level-headed, calm
+		- High: Aggressive, tempermental, anxious
+
+
+More likely to start a war: hO, lC, hE, lA, hN
+More likely to expand: hO, hC, hE, lA, hN
+More likely to form an alliance: hO, hC, hE, hA, lN
+More likely to have strong culture: lO, hC, lE, lA, lN
+More likely to win a war: hO, hC, hE, lA, lN
+More likely to become wealthy: hO, hC, hE, lA, hN
+More likely to disunionize: hO, lC, hE, lA, hN
+
+
+
+Climate
+=======
+- Measure of warthm and wetness (values between 0-1)
+- Biomes are determined from climate data
+- Biomes:
+	- Desert: hWm or mWm, lWt
+	- Savanna: hWm, mWt
+	- Tropical forest: hWm, hWt
+	- Grassland: mWm, mWt
+	- Temperate forest: mWm, hWt
+	- Boreal forest: lWm, mWt
+	- Tundra: lWm, lWt
+	- Ice: 0Wm
+
+D, S, J, G, Ft, Fb, T
+
+   1
+W	| D | S | J
+A	| -   -   -
+R	| D | G | Ft
+M	| -   -   -
+T	| T | T | Fb
+H	|_____________
+   0			  1
+		WETNESS
