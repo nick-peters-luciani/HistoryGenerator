@@ -49,7 +49,7 @@
 			// splitContainer1
 			// 
 			this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.splitContainer1.Location = new System.Drawing.Point(5, 5);
+			this.splitContainer1.Location = new System.Drawing.Point(3, 27);
 			this.splitContainer1.Name = "splitContainer1";
 			// 
 			// splitContainer1.Panel1
@@ -62,8 +62,8 @@
 			// 
 			this.splitContainer1.Panel2.Controls.Add(this.CanvasPanel);
 			this.splitContainer1.Panel2MinSize = 150;
-			this.splitContainer1.Size = new System.Drawing.Size(1030, 699);
-			this.splitContainer1.SplitterDistance = 342;
+			this.splitContainer1.Size = new System.Drawing.Size(1168, 921);
+			this.splitContainer1.SplitterDistance = 300;
 			this.splitContainer1.TabIndex = 0;
 			this.splitContainer1.Text = "splitContainer1";
 			// 
@@ -83,8 +83,8 @@
 			// 
 			this.splitContainer2.Panel2.Controls.Add(this.GenerateButton);
 			this.splitContainer2.Panel2MinSize = 50;
-			this.splitContainer2.Size = new System.Drawing.Size(342, 699);
-			this.splitContainer2.SplitterDistance = 591;
+			this.splitContainer2.Size = new System.Drawing.Size(300, 921);
+			this.splitContainer2.SplitterDistance = 600;
 			this.splitContainer2.TabIndex = 0;
 			this.splitContainer2.Text = "splitContainer2";
 			// 
@@ -94,7 +94,7 @@
 			this.tabControl1.Location = new System.Drawing.Point(0, 0);
 			this.tabControl1.Name = "tabControl1";
 			this.tabControl1.SelectedIndex = 0;
-			this.tabControl1.Size = new System.Drawing.Size(342, 591);
+			this.tabControl1.Size = new System.Drawing.Size(300, 600);
 			this.tabControl1.TabIndex = 0;
 			// 
 			// GenerateButton
@@ -102,7 +102,7 @@
 			this.GenerateButton.Dock = System.Windows.Forms.DockStyle.Top;
 			this.GenerateButton.Location = new System.Drawing.Point(0, 0);
 			this.GenerateButton.Name = "GenerateButton";
-			this.GenerateButton.Size = new System.Drawing.Size(342, 30);
+			this.GenerateButton.Size = new System.Drawing.Size(300, 30);
 			this.GenerateButton.TabIndex = 0;
 			this.GenerateButton.Text = "Generate";
 			this.GenerateButton.UseVisualStyleBackColor = true;
@@ -116,7 +116,7 @@
 			this.CanvasPanel.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.CanvasPanel.Location = new System.Drawing.Point(0, 0);
 			this.CanvasPanel.Name = "CanvasPanel";
-			this.CanvasPanel.Size = new System.Drawing.Size(684, 699);
+			this.CanvasPanel.Size = new System.Drawing.Size(864, 921);
 			this.CanvasPanel.TabIndex = 0;
 			// 
 			// RenderView
@@ -124,7 +124,7 @@
 			this.RenderView.BackColor = System.Drawing.SystemColors.AppWorkspace;
 			this.RenderView.Location = new System.Drawing.Point(1, 1);
 			this.RenderView.Name = "RenderView";
-			this.RenderView.Size = new System.Drawing.Size(300, 300);
+			this.RenderView.Size = new System.Drawing.Size(500, 500);
 			this.RenderView.TabIndex = 0;
 			this.RenderView.TabStop = false;
 			this.RenderView.Paint += RenderView_Paint;
@@ -133,8 +133,8 @@
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(1040, 709);
-			this.Controls.Add(this.splitContainer1);
+			this.ClientSize = new System.Drawing.Size(1184, 861);
+			this.Controls.Add(this.tableLayoutPanel1);
 			this.Name = "HistoryGeneratorWindow";
 			this.Padding = new System.Windows.Forms.Padding(5);
 			this.Text = "HistoryGeneratorWindow";
