@@ -57,7 +57,7 @@ namespace HistoryGenerator.Rendering
 					WaterType waterType = waterMap[x,y];
 					if (waterType != WaterType.None && waterType != WaterType.Sea)
 					{
-						color = Color.FromArgb(0, 127, 127);
+						color = Color.FromArgb(70, 175, 160);
 					}
 					bitmap.SetPixel(x, y, color);
 				}
