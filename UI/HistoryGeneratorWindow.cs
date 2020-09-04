@@ -17,6 +17,8 @@ namespace HistoryGenerator
 			InitializeComponent();
 			
 			RenderView.Paint += RenderView_Paint;
+			MenuItemSave.Click += MenuItemSave_Click;
+			MenuItemLoad.Click += MenuItemLoad_Click;
 
 			Program.Regenerated += OnRegenerated;
 		}
@@ -167,6 +169,46 @@ namespace HistoryGenerator
 		private void RenderView_Paint(object sender, PaintEventArgs e)
 		{
 			_worldRenderer.Paint(e.Graphics);
+		}
+
+		private void MenuItemSave_Click(object sender, EventArgs e)
+		{
+			OpenSaveDialog();
+		}
+
+		private void MenuItemLoad_Click(object sender, EventArgs e)
+		{
+			OpenLoadDialog();
+		}
+
+		public void OpenSaveDialog()
+		{
+			SaveFileDialog saveFileDialog = new SaveFileDialog
+			{
+				Filter = $"HistoryGenerator Settings|*{Program.SettingsFileExt}",
+				Title = "Save Settings"
+			};
+			saveFileDialog.ShowDialog();
+
+			if (saveFileDialog.FileName != "")
+			{
+				Program.SaveSettings(saveFileDialog.FileName);
+			}
+		}
+
+		public void OpenLoadDialog()
+		{
+			OpenFileDialog openFileDialog = new OpenFileDialog
+			{
+				Filter = $"HistoryGenerator Settings|*{Program.SettingsFileExt}",
+				Title = "Load Settings"
+			};
+
+			if (openFileDialog.ShowDialog() == DialogResult.OK)
+			{
+				Focus();	// To remove focus from any settings
+				Program.LoadSettings(openFileDialog.FileName);
+			}
 		}
 	}
 }

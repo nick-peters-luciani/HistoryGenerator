@@ -16,6 +16,7 @@ namespace HistoryGenerator
 		
 		public static event EventHandler Regenerated;
 
+		[STAThread]
 		static void Main()
 		{
 			WorldSettings = new WorldSettings
@@ -110,6 +111,15 @@ namespace HistoryGenerator
 			window.AddNumberSetting(groupHandle4, "Scale", ClimateMapGenerator.Settings, nameof(ClimateMapGeneratorSettings.Scale), 0.01, 5000, 10, 2);
 
 			return window;
+		}
+
+		public const string SettingsFileExt = ".json";
+		public static void SaveSettings(string filePath)
+		{
+		}
+
+		public static void LoadSettings(string filePath)
+		{
 		}
 	}
 }
