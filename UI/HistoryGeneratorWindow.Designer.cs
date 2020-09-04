@@ -127,7 +127,6 @@
 			this.RenderView.Size = new System.Drawing.Size(500, 500);
 			this.RenderView.TabIndex = 0;
 			this.RenderView.TabStop = false;
-			this.RenderView.Paint += RenderView_Paint;
 			// 
 			// HistoryGeneratorWindow
 			// 
@@ -159,6 +158,6 @@
 		private System.Windows.Forms.TabControl tabControl1;
 		private System.Windows.Forms.Button GenerateButton;
 		private System.Windows.Forms.Panel CanvasPanel;
-		private System.Windows.Forms.PictureBox RenderView;
+		public System.Windows.Forms.PictureBox RenderView;
 	}
 }

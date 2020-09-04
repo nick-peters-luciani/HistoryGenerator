@@ -15,6 +15,8 @@ namespace HistoryGenerator
 			_worldRenderer = new WorldRenderer();
 			
 			InitializeComponent();
+			
+			RenderView.Paint += RenderView_Paint;
 
 			Program.Regenerated += OnRegenerated;
 		}
@@ -161,6 +163,7 @@ namespace HistoryGenerator
 			RenderView.Size = new Size(Program.World.Width, Program.World.Height);
 			Refresh();
 		}
+
 		private void RenderView_Paint(object sender, PaintEventArgs e)
 		{
 			_worldRenderer.Paint(e.Graphics);
