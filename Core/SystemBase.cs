@@ -1,4 +1,4 @@
-﻿using HistoryGenerator.Model;
+﻿using HistoryGenerator.Models;
 
 namespace HistoryGenerator.Core
 {

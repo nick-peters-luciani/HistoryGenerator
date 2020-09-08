@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace HistoryGenerator.Model
+namespace HistoryGenerator.Models
 {
 	public struct ClimateData
 	{

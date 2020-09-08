@@ -1,5 +1,5 @@
 ﻿using HistoryGenerator.Collections;
-using HistoryGenerator.Model;
+using HistoryGenerator.Core;
 using System.Drawing;
 
 namespace HistoryGenerator.Rendering

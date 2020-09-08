@@ -73,8 +73,6 @@ namespace HistoryGenerator.Core
 
 		private void InitializeSettings(Type settingsType)
 		{
-			SettingsAttribute settingsAttribute = settingsType.GetCustomAttribute<SettingsAttribute>();
-
 			object settings = Activator.CreateInstance(settingsType);
 			PropertyInfo[] settingProperties = settingsType.GetProperties(BindingFlags.Public | BindingFlags.Instance);
 			foreach (PropertyInfo pInfo in settingProperties)

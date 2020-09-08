@@ -3,7 +3,7 @@ using HistoryGenerator.Core;
 using System;
 using System.Collections.Generic;
 
-namespace HistoryGenerator.Model
+namespace HistoryGenerator.Core
 {
 	[Settings("World", "General", Priority=0)]
 	public class WorldSettings

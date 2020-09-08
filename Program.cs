@@ -1,6 +1,6 @@
 ﻿using HistoryGenerator.Collections;
 using HistoryGenerator.Core;
-using HistoryGenerator.Model;
+using HistoryGenerator.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
