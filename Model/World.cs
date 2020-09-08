@@ -1,12 +1,17 @@
 ﻿using HistoryGenerator.Collections;
+using HistoryGenerator.Core;
 using System;
 using System.Collections.Generic;
 
 namespace HistoryGenerator.Model
 {
+	[Settings("World", "General", Priority=0)]
 	public class WorldSettings
 	{
+		[NumberSetting(DefaultValue=800, MinValue=1, MaxValue=5000, Increment=100)]
 		public int Width { get; set; }
+		
+		[NumberSetting(DefaultValue=800, MinValue=1, MaxValue=5000, Increment=100)]
 		public int Height { get; set; }
 	}
 

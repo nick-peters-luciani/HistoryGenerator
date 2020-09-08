@@ -1,33 +1,40 @@
 ﻿using HistoryGenerator.Collections;
+using HistoryGenerator.Core;
 using HistoryGenerator.Model;
 using HistoryGenerator.Utility;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace HistoryGenerator.Generators
+namespace HistoryGenerator.Systems
 {
-	public class ClimateMapGeneratorSettings
+	[Settings("World", "Climate")]
+	public class ClimateMapSystemSettings
 	{
+		[NumberSetting(MinValue=int.MinValue, MaxValue=int.MaxValue)]
 		public int Seed { get; set; }
+
+		[NumberSetting(DefaultValue=150, MinValue=0.01, MaxValue=5000, Increment=10, Decimals=2)]
 		public double Scale { get; set; }
 	}
 
-	public class ClimateMapGenerator
+	[System(Dependencies = new Type[] { typeof(HeightMapSystem), typeof(WaterMapSystem) })]
+	public class ClimateMapSystem : SystemBase
 	{
-		public ClimateMapGeneratorSettings Settings { get; set; }
-
+		private ClimateMapSystemSettings Settings;
 		private Map<double> HeightMap;
 		private Map<WaterType> WaterMap;
 
 		private OpenSimplexNoise simplexNoise;
 
-		public Map<ClimateData> Generate()
+		public override void Execute(World world)
 		{
+			Settings = Program.SystemManager.GetSettings<ClimateMapSystemSettings>();
+
 			simplexNoise = new OpenSimplexNoise(Settings.Seed);
 
-			HeightMap = Program.World.GetMap<Map<double>>("HeightMap");
-			WaterMap = Program.World.GetMap<Map<WaterType>>("WaterMap");
+			HeightMap = world.GetMap<Map<double>>("HeightMap");
+			WaterMap = world.GetMap<Map<WaterType>>("WaterMap");
 
 			Map<ClimateData> climateMap = new Map<ClimateData>(Program.World.Width, Program.World.Height);
 			
@@ -48,7 +55,7 @@ namespace HistoryGenerator.Generators
 				}
 			}
 
-			return climateMap;
+			world.AddMap("ClimateMap", climateMap);
 		}
 
 		private Map<double> _wetnessMap;

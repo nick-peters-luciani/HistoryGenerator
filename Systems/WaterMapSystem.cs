@@ -1,30 +1,44 @@
 ﻿using HistoryGenerator.Collections;
+using HistoryGenerator.Core;
 using HistoryGenerator.Model;
 using HistoryGenerator.Utility;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace HistoryGenerator.Generators
+namespace HistoryGenerator.Systems
 {
-	public class WaterMapGeneratorSettings
+	[Settings("World", "Water")]
+	public class WaterMapSystemSettings
 	{
+		[NumberSetting(MinValue=int.MinValue, MaxValue=int.MaxValue)]
 		public int Seed { get; set; }
+
+		[NumberSetting(DefaultValue=0.4, MinValue=0, MaxValue=1, Increment=0.05, Decimals=2)]
 		public double SeaLevel { get; set; }
+		
+		[NumberSetting(DefaultValue=0.5, MinValue=0, MaxValue=1, Increment=0.05, Decimals=2)]
 		public double MinSpringLevel { get; set; }
+		
+		[NumberSetting(DefaultValue=30, MinValue=0, MaxValue=100, Increment=1)]
 		public int MaxSpringCount { get; set; }
+		
+		[NumberSetting(DefaultValue=10, MinValue=0, MaxValue=30, Increment=1)]
 		public int MaxPoolSize { get; set; }
 	}
 
-	public class WaterMapGenerator
+	[System(Dependencies = new Type[] { typeof(HeightMapSystem) })]
+	public class WaterMapSystem : SystemBase
 	{	
-		public WaterMapGeneratorSettings Settings { get; set; }
-
+		private WaterMapSystemSettings Settings;
 		private Map<double> HeightMap;
 		private RNG _rng;
 
-		public Map<WaterType> Generate()
+		public override void Execute(World world)
 		{
-			HeightMap = Program.World.GetMap<Map<double>>("HeightMap");
+			Settings = Program.SystemManager.GetSettings<WaterMapSystemSettings>();
+
+			HeightMap = world.GetMap<Map<double>>("HeightMap");
 
 			_rng = new RNG(Settings.Seed);
 
@@ -57,7 +71,7 @@ namespace HistoryGenerator.Generators
 				}
 			}
 
-			return waterMap;
+			world.AddMap("WaterMap", waterMap);
 		}
 
 		private void Flow(Map<WaterType> waterMap, Position position)

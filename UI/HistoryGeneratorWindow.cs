@@ -1,6 +1,7 @@
 ﻿using HistoryGenerator.Rendering;
 using HistoryGenerator.UI.Controls;
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -9,6 +10,7 @@ namespace HistoryGenerator
 	public partial class HistoryGeneratorWindow : Form
 	{
 		private readonly WorldRenderer _worldRenderer;
+		private readonly Dictionary<string, IntPtr> _tabHandles = new Dictionary<string, IntPtr>();
 
 		public HistoryGeneratorWindow()
 		{
@@ -23,12 +25,19 @@ namespace HistoryGenerator
 			Program.Regenerated += OnRegenerated;
 		}
 
+		public IntPtr GetTab(string name)
+		{
+			return _tabHandles.ContainsKey(name) ? _tabHandles[name] : IntPtr.Zero;
+		}
+
 		public IntPtr AddTab(string name)
 		{
 			tabControl1.TabPages.Add(name);
 
 			TabPage tabPage = tabControl1.TabPages[tabControl1.TabPages.Count-1];
 			tabPage.AutoScroll = true;
+
+			_tabHandles[name] = tabPage.Handle;
 
 			return tabPage.Handle;
 		}
@@ -86,9 +95,9 @@ namespace HistoryGenerator
 			NumericUpDown upDown = new NumericUpDown
 			{
 				Dock = DockStyle.Fill,
-				Value = (decimal)value,
 				Minimum = (decimal)minValue,
 				Maximum = (decimal)maxValue,
+				Value = (decimal)value,
 				Increment = (decimal)increment,
 				DecimalPlaces = decimals
 			};
@@ -103,7 +112,8 @@ namespace HistoryGenerator
 
 		public IntPtr AddNumberSetting(IntPtr groupHandle, string name, object dataSource, string dataMember, double minValue=0, double maxValue=1000, double increment=1, int decimals=0)
 		{
-			IntPtr settingHandle = AddNumberSetting(groupHandle, name, 0, minValue, maxValue, increment, decimals);
+			double defaultValue = (double)Convert.ChangeType(dataSource.GetType().GetProperty(dataMember).GetValue(dataSource), typeof(double));
+			IntPtr settingHandle = AddNumberSetting(groupHandle, name, defaultValue, minValue, maxValue, increment, decimals);
 			NumericUpDown setting = FromHandle(settingHandle) as NumericUpDown;
 			setting.DataBindings.Add(nameof(NumericUpDown.Value), dataSource, dataMember, false, DataSourceUpdateMode.OnValidation);
 			return settingHandle;
@@ -161,8 +171,8 @@ namespace HistoryGenerator
 
 		private void OnRegenerated(object sender, EventArgs eventArgs)
 		{
-			_worldRenderer.SetWorld(Program.World);
 			RenderView.Size = new Size(Program.World.Width, Program.World.Height);
+			_worldRenderer.Render(Program.World);
 			Refresh();
 		}
 
