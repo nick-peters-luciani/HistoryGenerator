@@ -12,6 +12,9 @@ namespace HistoryGenerator.Core
 
 		public void Initialize()
 		{
+			Systems.Clear();
+			Settings.Clear();
+
 			Type[] assemblyTypes = GetType().Assembly.GetTypes();
 			foreach(Type type in assemblyTypes)
 			{

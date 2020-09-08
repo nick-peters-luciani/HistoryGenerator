@@ -11,6 +11,7 @@ namespace HistoryGenerator
 	{
 		private readonly WorldRenderer _worldRenderer;
 		private readonly Dictionary<string, IntPtr> _tabHandles = new Dictionary<string, IntPtr>();
+		private readonly List<IntPtr> _settingsHandles = new List<IntPtr>();
 
 		public HistoryGeneratorWindow()
 		{
@@ -107,6 +108,8 @@ namespace HistoryGenerator
 
 			table.RowCount++;
 
+			_settingsHandles.Add(upDown.Handle);
+
 			return upDown.Handle;
 		}
 
@@ -144,6 +147,8 @@ namespace HistoryGenerator
 
 			table.RowCount++;
 
+			_settingsHandles.Add(checkBox.Handle);
+
 			return checkBox.Handle;
 		}
 
@@ -162,6 +167,17 @@ namespace HistoryGenerator
 			}
 
 			return value != null ? (T)Convert.ChangeType(value, typeof(T)) : default;
+		}
+
+		public void RefreshSettings()
+		{
+			foreach (IntPtr handle in _settingsHandles)
+			{
+				foreach (Binding binding in FromHandle(handle).DataBindings)
+				{
+					binding.ReadValue();
+				}
+			}
 		}
 
 		private void GenerateButton_Click(object sender, EventArgs e)

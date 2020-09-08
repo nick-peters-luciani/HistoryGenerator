@@ -1,11 +1,16 @@
 ﻿using HistoryGenerator.Collections;
 using HistoryGenerator.Core;
 using HistoryGenerator.Model;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Drawing;
+using System.IO;
 using System.Reflection;
+using System.Text;
 using System.Windows.Forms;
 using System.Linq;
+using HistoryGenerator.Utility;
 
 namespace HistoryGenerator
 {
@@ -82,10 +87,60 @@ namespace HistoryGenerator
 		public const string SettingsFileExt = ".json";
 		public static void SaveSettings(string filePath)
 		{
+			JObject settingsManifest = new JObject();
+
+			foreach (object settings in SystemManager.Settings)
+			{
+				SettingsAttribute settingsAttribute = settings.GetType().GetCustomAttribute<SettingsAttribute>();
+				settingsManifest.Add(settingsAttribute.Key, JObject.FromObject(settings));
+			}
+
+			FileStream fs = null;
+			try
+			{
+				fs = File.Open(filePath, FileMode.OpenOrCreate);
+				fs.Write(Encoding.UTF8.GetBytes(settingsManifest.ToString(Formatting.Indented)));
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show($"Error: {ex.Message}\n\nDetails:\n\n{ex.StackTrace}");
+			}
+			finally
+			{
+				fs?.Close();
+			}
 		}
 
 		public static void LoadSettings(string filePath)
 		{
+			try
+			{
+				string content;
+				using (StreamReader reader = new StreamReader(filePath))
+				{
+					content = reader.ReadToEnd();
+				}
+
+				JObject settingsManifest = JObject.Parse(content);
+
+				foreach (object settings in SystemManager.Settings)
+				{
+					SettingsAttribute settingsAttribute = settings.GetType().GetCustomAttribute<SettingsAttribute>();
+					if (settingsManifest.ContainsKey(settingsAttribute.Key))
+					{
+						object newSettings = settingsManifest[settingsAttribute.Key].ToObject(settings.GetType());
+						MiscUtil.CopyProperties(newSettings, settings);
+					}
+				}
+
+				Window.RefreshSettings();
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show($"Error: {ex.Message}\n\nDetails:\n\n{ex.StackTrace}");
+			}
+
+			Regenerate();
 		}
 	}
 }

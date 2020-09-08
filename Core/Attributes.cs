@@ -24,6 +24,8 @@ namespace HistoryGenerator.Core
 			GroupName = groupName;
 			Priority = priority;
 		}
+
+		public string Key => $"{TabName}.{GroupName}";
 	}
 
 	[AttributeUsage(AttributeTargets.Property)]
