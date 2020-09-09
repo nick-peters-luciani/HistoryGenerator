@@ -79,9 +79,10 @@ namespace HistoryGenerator.Core
 			{
 				foreach (Attribute attribute in pInfo.GetCustomAttributes())
 				{
-					if (attribute is NumberSettingAttribute a)
+					if (attribute.GetType().IsSubclassOf(typeof(SettingAttribute)))
 					{
-						pInfo.SetValue(settings, Convert.ChangeType(a.DefaultValue, pInfo.PropertyType));
+						SettingAttribute attr = (SettingAttribute)attribute;
+						pInfo.SetValue(settings, Convert.ChangeType(attr.DefaultValue, pInfo.PropertyType));
 					}
 				}
 			}

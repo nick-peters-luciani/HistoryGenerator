@@ -1,6 +1,5 @@
 ﻿using HistoryGenerator.Collections;
 using HistoryGenerator.Core;
-using HistoryGenerator.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -65,6 +64,14 @@ namespace HistoryGenerator
 					if (attribute is NumberSettingAttribute a)
 					{
 						Window.AddNumberSetting(groupHandle, pInfo.Name, settings, pInfo.Name, a.MinValue, a.MaxValue, a.Increment, a.Decimals);
+					}
+					else if (attribute is BooleanSettingAttribute)
+					{
+						Window.AddBooleanSetting(groupHandle, pInfo.Name, settings, pInfo.Name);
+					}
+					else if (attribute is ColorSettingAttribute)
+					{
+						Window.AddColorSetting(groupHandle, pInfo.Name, settings, pInfo.Name);
 					}
 				}
 			}

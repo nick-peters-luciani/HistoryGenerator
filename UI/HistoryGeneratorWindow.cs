@@ -117,7 +117,7 @@ namespace HistoryGenerator
 		{
 			double defaultValue = (double)Convert.ChangeType(dataSource.GetType().GetProperty(dataMember).GetValue(dataSource), typeof(double));
 			IntPtr settingHandle = AddNumberSetting(groupHandle, name, defaultValue, minValue, maxValue, increment, decimals);
-			NumericUpDown setting = FromHandle(settingHandle) as NumericUpDown;
+			Control setting = FromHandle(settingHandle);
 			setting.DataBindings.Add(nameof(NumericUpDown.Value), dataSource, dataMember, false, DataSourceUpdateMode.OnValidation);
 			return settingHandle;
 		}
@@ -152,21 +152,71 @@ namespace HistoryGenerator
 			return checkBox.Handle;
 		}
 
-		public T GetSettingValue<T>(IntPtr handle)
+		public IntPtr AddBooleanSetting(IntPtr groupHandle, string name, object dataSource, string dataMember)
 		{
-			Control control = FromHandle(handle);
+			bool defaultValue = (bool)Convert.ChangeType(dataSource.GetType().GetProperty(dataMember).GetValue(dataSource), typeof(bool));
+			IntPtr settingHandle = AddBooleanSetting(groupHandle, name, defaultValue);
+			Control setting = FromHandle(settingHandle);
+			setting.DataBindings.Add(nameof(CheckBox.Checked), dataSource, dataMember);
+			return settingHandle;
+		}
 
-			object value = null;
-			if (control is NumericUpDown upDown)
-			{
-				value = upDown.Value;
-			}
-			else if (control is CheckBox checkBox)
-			{
-				value = checkBox.Checked;
-			}
+		public IntPtr AddColorSetting(IntPtr groupHandle, string name, Color value)
+		{
+			TableLayoutPanel table = FromHandle(groupHandle) as TableLayoutPanel;
 
-			return value != null ? (T)Convert.ChangeType(value, typeof(T)) : default;
+			Label label = new Label
+			{
+				Dock = DockStyle.Fill,
+				Text = name,
+				TextAlign = ContentAlignment.MiddleLeft
+			};
+			table.Controls.Add(label);
+			table.SetRow(label, table.RowCount);
+			table.SetColumn(label, 0);
+
+			Button button = new Button
+			{
+				Dock = DockStyle.Fill,
+				BackColor = value,
+				Text = ColorTranslator.ToHtml(value)
+			};
+			button.DataBindings.Add(nameof(Button.Text), button, nameof(Button.BackColor));
+			button.Click += OnColorSettingButtonClicked;
+			table.Controls.Add(button);
+			table.SetRow(button, table.RowCount);
+			table.SetColumn(button, 1);
+
+			table.RowCount++;
+
+			_settingsHandles.Add(button.Handle);
+
+			return button.Handle;
+		}
+
+		private void OnColorSettingButtonClicked(object sender, EventArgs e)
+		{
+			Button button = sender as Button;
+			ColorDialog dialog = new ColorDialog
+			{
+				Color = button.BackColor,
+				FullOpen = true
+			};
+
+			DialogResult result = dialog.ShowDialog();
+			if (result.HasFlag(DialogResult.OK))
+			{
+				button.BackColor = dialog.Color;
+			}
+		}
+
+		public IntPtr AddColorSetting(IntPtr groupHandle, string name, object dataSource, string dataMember)
+		{
+			Color defaultValue = (Color)Convert.ChangeType(dataSource.GetType().GetProperty(dataMember).GetValue(dataSource), typeof(Color));
+			IntPtr settingHandle = AddColorSetting(groupHandle, name, defaultValue);
+			Control setting = FromHandle(settingHandle);
+			setting.DataBindings.Add(nameof(Button.BackColor), dataSource, dataMember);
+			return settingHandle;
 		}
 
 		public void RefreshSettings()

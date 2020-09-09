@@ -28,21 +28,56 @@ namespace HistoryGenerator.Core
 		public string Key => $"{TabName}.{GroupName}";
 	}
 
-	[AttributeUsage(AttributeTargets.Property)]
-	public class NumberSettingAttribute : Attribute
+	public abstract class SettingAttribute : Attribute
 	{
-		public double DefaultValue;
+		public virtual object DefaultValue { get; set; }
+		public SettingAttribute(object defaultValue)
+		{
+			DefaultValue = defaultValue;
+		}
+	}
+
+	[AttributeUsage(AttributeTargets.Property)]
+	public class NumberSettingAttribute : SettingAttribute
+	{
 		public double MinValue;
 		public double MaxValue;
 		public double Increment;
 		public int Decimals;
-		public NumberSettingAttribute(double defaultValue=0, double minValue=0, double maxValue=1000, double increment=1, int decimals=0)
+		public NumberSettingAttribute(double defaultValue=0, double minValue=0, double maxValue=1000, double increment=1, int decimals=0) : base(defaultValue)
 		{
-			DefaultValue = defaultValue;
 			MinValue = minValue;
 			MaxValue = maxValue;
 			Increment = increment;
 			Decimals = decimals;
 		}
+	}
+
+	[AttributeUsage(AttributeTargets.Property)]
+	public class BooleanSettingAttribute : SettingAttribute
+	{
+		public BooleanSettingAttribute(bool defaultValue=false) : base(defaultValue) { }
+	}
+
+	[AttributeUsage(AttributeTargets.Property)]
+	public class ColorSettingAttribute : SettingAttribute
+	{
+		private object _defaultValue;
+		public override object DefaultValue
+		{
+			get => _defaultValue;
+			set {
+				if (value is string)
+				{
+					_defaultValue = System.Drawing.ColorTranslator.FromHtml((string)value);
+				}
+				else
+				{
+					_defaultValue = value;
+				}
+			}
+		}
+
+		public ColorSettingAttribute(string defaultValue="#FFFFFF") : base(System.Drawing.ColorTranslator.FromHtml(defaultValue)) { }
 	}
 }

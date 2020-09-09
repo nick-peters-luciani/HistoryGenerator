@@ -1,6 +1,5 @@
 ﻿using HistoryGenerator.Collections;
 using HistoryGenerator.Core;
-using HistoryGenerator.Models;
 using HistoryGenerator.Utility;
 using System;
 using System.Drawing;

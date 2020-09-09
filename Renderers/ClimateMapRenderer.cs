@@ -7,15 +7,50 @@ using System.Drawing;
 
 namespace HistoryGenerator.Systems
 {
+	[Settings("Rendering", "Biomes")]
+	public class ClimateMapRendererSettings
+	{
+		[BooleanSetting(DefaultValue=true)]
+		public bool RenderHeight { get; set; }
+
+		[ColorSetting(DefaultValue="60, 100, 0")]
+		public Color JungleColor { get; set; }
+
+		[ColorSetting(DefaultValue="170, 150, 0")]
+		public Color SavannaColor { get; set; }
+
+		[ColorSetting(DefaultValue="234, 163, 39")]
+		public Color DesertColor { get; set; }
+
+		[ColorSetting(DefaultValue="0, 124, 24")]
+		public Color TemperateForestColor { get; set; }
+
+		[ColorSetting(DefaultValue="135, 173, 0")]
+		public Color GrasslandColor { get; set; }
+
+		[ColorSetting(DefaultValue="31, 158, 101")]
+		public Color BorealForestColor { get; set; }
+
+		[ColorSetting(DefaultValue="135, 219, 181")]
+		public Color TaigaColor { get; set; }
+
+		[ColorSetting(DefaultValue="255, 255, 255")]
+		public Color IceColor { get; set; }
+	}
+
 	[System(Dependencies = new Type[] {typeof(ClimateMapSystem), typeof(WaterMapRenderer)})]
 	public class ClimateMapRenderer : SystemBase
 	{
+		private ClimateMapRendererSettings Settings;
+
 		public override void Execute(World world)
 		{
 			Map<Color> renderView = world.GetMap<Map<Color>>("RenderView");
 			Map<ClimateData> climateMap = world.GetMap<Map<ClimateData>>("ClimateMap");
 			Map<double> heightMap = world.GetMap<Map<double>>("HeightMap");
 			Map<WaterType> waterMap = world.GetMap<Map<WaterType>>("WaterMap");
+
+			Settings = Program.SystemManager.GetSettings<ClimateMapRendererSettings>();
 
 			for (int x=0; x<world.Width; x++)
 			{
@@ -24,7 +59,11 @@ namespace HistoryGenerator.Systems
 					Color? color = GetBiomeColor(climateMap[x,y].GetBiome());
 					if (color != null && waterMap[x,y] == WaterType.None)
 					{
-						renderView[x,y] = color.Value.Scale(MathExtensions.Lerp(0.2f, 1, heightMap[x,y]));
+						if (Settings.RenderHeight)
+						{
+							color = color.Value.Scale(MathExtensions.Lerp(0.2f, 1, heightMap[x,y]));
+						}
+						renderView[x,y] = color.Value;
 					}
 				}
 			}
@@ -34,14 +73,14 @@ namespace HistoryGenerator.Systems
 		{
 			return biome switch
 			{
-				"Jungle" => Color.FromArgb(60, 100, 0),
-				"Savanna" => Color.FromArgb(170, 150, 0),
-				"Desert" => Color.FromArgb(234, 163, 39),
-				"TemperateForest" => Color.FromArgb(0, 124, 24),
-				"Grassland" => Color.FromArgb(135, 173, 0),
-				"BorealForest" => Color.FromArgb(31, 158, 101),
-				"Taiga" => Color.FromArgb(135, 219, 181),
-				"Ice" => Color.White,
+				"Jungle" => Settings.JungleColor,
+				"Savanna" => Settings.SavannaColor,
+				"Desert" => Settings.DesertColor,
+				"TemperateForest" => Settings.TemperateForestColor,
+				"Grassland" => Settings.GrasslandColor,
+				"BorealForest" => Settings.BorealForestColor,
+				"Taiga" => Settings.TaigaColor,
+				"Ice" => Settings.IceColor,
 				_ => null,
 			};
 		}
