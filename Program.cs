@@ -81,7 +81,7 @@ namespace HistoryGenerator
 		{
 			WorldSettings settings = SystemManager.GetSettings<WorldSettings>();
 			World = new World(settings.Width, settings.Height);
-			World.AddMap("RenderView", new Map<Color>(World.Width, World.Height));
+			World.AddData("RenderView", new Map<Color>(World.Width, World.Height));
 
 			foreach (SystemBase system in SystemManager.Systems)
 			{

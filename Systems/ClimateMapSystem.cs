@@ -33,8 +33,8 @@ namespace HistoryGenerator.Systems
 
 			simplexNoise = new OpenSimplexNoise(Settings.Seed);
 
-			HeightMap = world.GetMap<Map<double>>("HeightMap");
-			WaterMap = world.GetMap<Map<WaterType>>("WaterMap");
+			HeightMap = world.GetData<Map<double>>("HeightMap");
+			WaterMap = world.GetData<Map<WaterType>>("WaterMap");
 
 			Map<ClimateData> climateMap = new Map<ClimateData>(Program.World.Width, Program.World.Height);
 			
@@ -55,7 +55,7 @@ namespace HistoryGenerator.Systems
 				}
 			}
 
-			world.AddMap("ClimateMap", climateMap);
+			world.AddData("ClimateMap", climateMap);
 		}
 
 		private Map<double> _wetnessMap;

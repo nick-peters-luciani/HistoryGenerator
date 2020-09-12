@@ -45,10 +45,10 @@ namespace HistoryGenerator.Systems
 
 		public override void Execute(World world)
 		{
-			Map<Color> renderView = world.GetMap<Map<Color>>("RenderView");
-			Map<ClimateData> climateMap = world.GetMap<Map<ClimateData>>("ClimateMap");
-			Map<double> heightMap = world.GetMap<Map<double>>("HeightMap");
-			Map<WaterType> waterMap = world.GetMap<Map<WaterType>>("WaterMap");
+			Map<Color> renderView = world.GetData<Map<Color>>("RenderView");
+			Map<ClimateData> climateMap = world.GetData<Map<ClimateData>>("ClimateMap");
+			Map<double> heightMap = world.GetData<Map<double>>("HeightMap");
+			Map<WaterType> waterMap = world.GetData<Map<WaterType>>("WaterMap");
 
 			Settings = Program.SystemManager.GetSettings<ClimateMapRendererSettings>();
 

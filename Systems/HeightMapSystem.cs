@@ -73,7 +73,7 @@ namespace HistoryGenerator.Systems
 				}
 			}
 
-			world.AddMap("HeightMap", heightMap);
+			world.AddData("HeightMap", heightMap);
 		}
 	}
 }

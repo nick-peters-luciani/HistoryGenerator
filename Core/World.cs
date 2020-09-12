@@ -1,6 +1,4 @@
-﻿using HistoryGenerator.Collections;
-using HistoryGenerator.Core;
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 namespace HistoryGenerator.Core
@@ -20,7 +18,7 @@ namespace HistoryGenerator.Core
 		public readonly int Width;
 		public readonly int Height;
 
-		private readonly Dictionary<string, IMap> _mapData = new Dictionary<string, IMap>();
+		private readonly Dictionary<string, object> _data = new Dictionary<string, object>();
 
 		public World(int width, int height)
 		{
@@ -28,19 +26,18 @@ namespace HistoryGenerator.Core
 			Height = height;
 		}
 
-		public bool HasMap(string key) => _mapData.ContainsKey(key);
+		public bool HasData(string key) => _data.ContainsKey(key);
 
-		public void AddMap(string key, IMap map)
+		public void AddData(string key, object data)
 		{
-			if (HasMap(key)) throw new Exception($"Map key already exists in world: '{key}'");
-			if (map.Width != Width || map.Height != Height) throw new Exception("Map must match dimensions of world.");
-			_mapData[key] = map;
+			if (HasData(key)) throw new Exception($"Data key already exists in world: '{key}'");
+			_data[key] = data;
 		}
 		
-		public T GetMap<T>(string key) where T : IMap
+		public T GetData<T>(string key)
 		{
-			if (!HasMap(key)) throw new Exception($"Map key does not exist in world: '{key}'");
-			return (T)_mapData[key];
+			if (!HasData(key)) throw new Exception($"Data key does not exist in world: '{key}'");
+			return (T)_data[key];
 		}
 	}
 }

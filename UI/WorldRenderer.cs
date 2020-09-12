@@ -10,7 +10,7 @@ namespace HistoryGenerator.Rendering
 
 		public void Render(World world)
 		{
-			Map<Color> renderView = world.GetMap<Map<Color>>("RenderView");
+			Map<Color> renderView = world.GetData<Map<Color>>("RenderView");
 			_image = new Bitmap(renderView.Width, renderView.Height);
 			for (int x=0; x<_image.Width; x++)
 			{

@@ -38,7 +38,7 @@ namespace HistoryGenerator.Systems
 		{
 			Settings = Program.SystemManager.GetSettings<WaterMapSystemSettings>();
 
-			HeightMap = world.GetMap<Map<double>>("HeightMap");
+			HeightMap = world.GetData<Map<double>>("HeightMap");
 
 			_rng = new RNG(Settings.Seed);
 
@@ -71,7 +71,7 @@ namespace HistoryGenerator.Systems
 				}
 			}
 
-			world.AddMap("WaterMap", waterMap);
+			world.AddData("WaterMap", waterMap);
 		}
 
 		private void Flow(Map<WaterType> waterMap, Position position)
