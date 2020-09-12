@@ -45,7 +45,7 @@ namespace HistoryGenerator.Systems
 
 		public override void Execute(World world)
 		{
-			Map<Color> renderView = world.GetData<Map<Color>>("RenderView");
+			Bitmap image = world.GetData<Bitmap>("GraphicsImage");
 			Map<ClimateData> climateMap = world.GetData<Map<ClimateData>>("ClimateMap");
 			Map<double> heightMap = world.GetData<Map<double>>("HeightMap");
 			Map<WaterType> waterMap = world.GetData<Map<WaterType>>("WaterMap");
@@ -63,7 +63,7 @@ namespace HistoryGenerator.Systems
 						{
 							color = color.Value.Scale(MathExtensions.Lerp(0.2f, 1, heightMap[x,y]));
 						}
-						renderView[x,y] = color.Value;
+						image.SetPixel(x,y,color.Value);
 					}
 				}
 			}

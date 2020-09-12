@@ -6,13 +6,13 @@ using System.Drawing;
 
 namespace HistoryGenerator.Systems
 {
-	[System(Dependencies = new Type[] {typeof(HeightMapSystem)})]
+	[System(Dependencies = new Type[] { typeof(HeightMapSystem), typeof(WorldRenderer) })]
 	public class HeightMapRenderer : SystemBase
 	{
 		public override void Execute(World world)
 		{
-			Map<Color> renderView = world.GetData<Map<Color>>("RenderView");
 			Map<double> heightMap = world.GetData<Map<double>>("HeightMap");
+			Bitmap image = world.GetData<Bitmap>("GraphicsImage");
 			
 			for (int x=0; x<world.Width; x++)
 			{
@@ -20,7 +20,7 @@ namespace HistoryGenerator.Systems
 				{
 					int c = (int)(MathExtensions.Lerp(0.2f, 1, heightMap[x,y]) * 255);
 					Color color = Color.FromArgb(c, c, c);
-					renderView[x,y] = color;
+					image.SetPixel(x,y,color);
 				}
 			}
 		}

@@ -1,5 +1,4 @@
-﻿using HistoryGenerator.Rendering;
-using HistoryGenerator.UI.Controls;
+﻿using HistoryGenerator.UI.Controls;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -9,14 +8,11 @@ namespace HistoryGenerator
 {
 	public partial class HistoryGeneratorWindow : Form
 	{
-		private readonly WorldRenderer _worldRenderer;
 		private readonly Dictionary<string, IntPtr> _tabHandles = new Dictionary<string, IntPtr>();
 		private readonly List<IntPtr> _settingsHandles = new List<IntPtr>();
 
 		public HistoryGeneratorWindow()
 		{
-			_worldRenderer = new WorldRenderer();
-			
 			InitializeComponent();
 			
 			RenderView.Paint += RenderView_Paint;
@@ -238,13 +234,15 @@ namespace HistoryGenerator
 		private void OnRegenerated(object sender, EventArgs eventArgs)
 		{
 			RenderView.Size = new Size(Program.World.Width, Program.World.Height);
-			_worldRenderer.Render(Program.World);
 			Refresh();
 		}
 
 		private void RenderView_Paint(object sender, PaintEventArgs e)
 		{
-			_worldRenderer.Paint(e.Graphics);
+			if (Program.World == null || !Program.World.HasData("GraphicsImage")) return;
+
+			Image image = Program.World.GetData<Image>("GraphicsImage");
+			e.Graphics.DrawImage(image, 0, 0);
 		}
 
 		private void MenuItemSave_Click(object sender, EventArgs e)
