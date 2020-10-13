@@ -31,6 +31,7 @@
 			this.splitContainer1 = new System.Windows.Forms.SplitContainer();
 			this.splitContainer2 = new System.Windows.Forms.SplitContainer();
 			this.tabControl1 = new System.Windows.Forms.TabControl();
+			this.RenderButton = new System.Windows.Forms.Button();
 			this.GenerateButton = new System.Windows.Forms.Button();
 			this.CanvasPanel = new System.Windows.Forms.Panel();
 			this.RenderView = new System.Windows.Forms.PictureBox();
@@ -88,6 +89,7 @@
 			// 
 			// splitContainer2.Panel2
 			// 
+			this.splitContainer2.Panel2.Controls.Add(this.RenderButton);
 			this.splitContainer2.Panel2.Controls.Add(this.GenerateButton);
 			this.splitContainer2.Panel2MinSize = 50;
 			this.splitContainer2.Size = new System.Drawing.Size(300, 921);
@@ -104,12 +106,23 @@
 			this.tabControl1.Size = new System.Drawing.Size(300, 600);
 			this.tabControl1.TabIndex = 0;
 			// 
+			// RenderButton
+			// 
+			this.RenderButton.Dock = System.Windows.Forms.DockStyle.Top;
+			this.RenderButton.Location = new System.Drawing.Point(0, 40);
+			this.RenderButton.Name = "RenderButton";
+			this.RenderButton.Size = new System.Drawing.Size(300, 40);
+			this.RenderButton.TabIndex = 1;
+			this.RenderButton.Text = "Render";
+			this.RenderButton.UseVisualStyleBackColor = true;
+			this.RenderButton.Click += new System.EventHandler(this.RenderButton_Click);
+			// 
 			// GenerateButton
 			// 
 			this.GenerateButton.Dock = System.Windows.Forms.DockStyle.Top;
 			this.GenerateButton.Location = new System.Drawing.Point(0, 0);
 			this.GenerateButton.Name = "GenerateButton";
-			this.GenerateButton.Size = new System.Drawing.Size(300, 30);
+			this.GenerateButton.Size = new System.Drawing.Size(300, 40);
 			this.GenerateButton.TabIndex = 0;
 			this.GenerateButton.Text = "Generate";
 			this.GenerateButton.UseVisualStyleBackColor = true;
@@ -221,5 +234,6 @@
 		public System.Windows.Forms.PictureBox RenderView;
 		public System.Windows.Forms.ToolStripMenuItem MenuItemLoad;
 		public System.Windows.Forms.ToolStripMenuItem MenuItemSave;
+		private System.Windows.Forms.Button RenderButton;
 	}
 }

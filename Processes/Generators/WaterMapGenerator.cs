@@ -1,77 +1,74 @@
 ﻿using HistoryGenerator.Collections;
-using HistoryGenerator.Core;
+using HistoryGenerator.Core.Processing;
+using HistoryGenerator.Core.Settings;
 using HistoryGenerator.Models;
 using HistoryGenerator.Utility;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace HistoryGenerator.Systems
+namespace HistoryGenerator.Processes.Generators
 {
-	[Settings("World", "Water")]
-	public class WaterMapSystemSettings
+	[Process(ProcessChain = "Generate", Dependencies = new[] { typeof(HeightMapGenerator) })]
+	public class WaterMapGenerator : Process
 	{
-		[NumberSetting(MinValue=int.MinValue, MaxValue=int.MaxValue)]
+		#region Settings
+		[NumberSetting(MinValue = int.MinValue, MaxValue = int.MaxValue)]
 		public int Seed { get; set; }
 
-		[NumberSetting(DefaultValue=0.4, MinValue=0, MaxValue=1, Increment=0.05, Decimals=2)]
-		public double SeaLevel { get; set; }
-		
-		[NumberSetting(DefaultValue=0.5, MinValue=0, MaxValue=1, Increment=0.05, Decimals=2)]
-		public double MinSpringLevel { get; set; }
-		
-		[NumberSetting(DefaultValue=30, MinValue=0, MaxValue=100, Increment=1)]
-		public int MaxSpringCount { get; set; }
-		
-		[NumberSetting(DefaultValue=10, MinValue=0, MaxValue=30, Increment=1)]
-		public int MaxPoolSize { get; set; }
-	}
+		[NumberSetting(MinValue = 0, MaxValue = 1, Increment = 0.05, Decimals = 2)]
+		public double SeaLevel { get; set; } = 0.4;
 
-	[System(Dependencies = new Type[] { typeof(HeightMapSystem) })]
-	public class WaterMapSystem : SystemBase
-	{	
-		private WaterMapSystemSettings Settings;
+		[NumberSetting(MinValue = 0, MaxValue = 1, Increment = 0.05, Decimals = 2)]
+		public double MinSpringLevel { get; set; } = 0.5;
+
+		[NumberSetting(MinValue = 0, MaxValue = 100, Increment = 1)]
+		public int MaxSpringCount { get; set; } = 30;
+
+		[NumberSetting(MinValue = 0, MaxValue = 30, Increment = 1)]
+		public int MaxPoolSize { get; set; } = 10;
+		#endregion
+
 		private Map<double> HeightMap;
 		private RNG _rng;
 
-		public override void Execute(World world)
+		public override void Execute(ProcessUnit processUnit)
 		{
-			Settings = Program.SystemManager.GetSettings<WaterMapSystemSettings>();
+			World world = processUnit.Get<World>("World");
+			HeightMap = processUnit.Get<Map<double>>("HeightMap");
 
-			HeightMap = world.GetData<Map<double>>("HeightMap");
+			_rng = new RNG(Seed);
 
-			_rng = new RNG(Settings.Seed);
+			Map<WaterType> waterMap = new Map<WaterType>(world.Width, world.Height);
 
-			Map<WaterType> waterMap = new Map<WaterType>(Program.World.Width, Program.World.Height);
-
-			for (int x=0; x<waterMap.Width; x++)
+			for (int x = 0; x < waterMap.Width; x++)
 			{
-				for (int y=0; y<waterMap.Height; y++)
+				for (int y = 0; y < waterMap.Height; y++)
 				{
-					if (HeightMap[x,y] <= Settings.SeaLevel)
+					if (HeightMap[x, y] <= SeaLevel)
 					{
-						waterMap[x,y] = WaterType.Sea;
+						waterMap[x, y] = WaterType.Sea;
 					}
 				}
 			}
 
 			List<Position> springPoints = new List<Position>();
-			for (int i=0; i<1000; i++)
+			for (int i = 0; i < 1000; i++)
 			{
-				if (springPoints.Count >= Settings.MaxSpringCount) break;
+				if (springPoints.Count >= MaxSpringCount) break;
 
 				int rx = _rng.Range(0, waterMap.Width);
 				int ry = _rng.Range(0, waterMap.Height);
-				if (HeightMap[rx,ry] > Settings.MinSpringLevel)
+				if (HeightMap[rx, ry] > MinSpringLevel)
 				{
-					waterMap[rx,ry] = WaterType.Spring;
-					Position position = new Position(rx,ry);
+					waterMap[rx, ry] = WaterType.Spring;
+					Position position = new Position(rx, ry);
 					springPoints.Add(position);
 					Flow(waterMap, position);
 				}
 			}
 
-			world.AddData("WaterMap", waterMap);
+			processUnit.Add("SeaLevel", SeaLevel);
+			processUnit.Add("WaterMap", waterMap);
 		}
 
 		private void Flow(Map<WaterType> waterMap, Position position)
@@ -80,8 +77,8 @@ namespace HistoryGenerator.Systems
 			while (true)
 			{
 				double curHeight = HeightMap[position.X, position.Y];
-				if (curHeight <= Settings.SeaLevel) break;
-				
+				if (curHeight <= SeaLevel) break;
+
 				/*double lowest = GetLowestNeighborValue(waterMap, position, out Position neighbor);
 				if (lowest <= curHeight)
 				{
@@ -109,7 +106,7 @@ namespace HistoryGenerator.Systems
 					.OrderBy(n => HeightMap[n.X, n.Y])
 					.Take(3)
 					.ToList();
-				
+
 				if (neighbors.Count > 0)
 				{
 					lastPosition = position;
@@ -142,9 +139,9 @@ namespace HistoryGenerator.Systems
 		private void Pool(Map<WaterType> waterMap, Position position)
 		{
 			waterMap[position.X, position.Y] = WaterType.Pool;
-			
+
 			int r;
-			for (r=1; r<=Settings.MaxPoolSize; r++)
+			for (r = 1; r <= MaxPoolSize; r++)
 			{
 				double lowest = 1;
 				Position lowestNeighbor = Position.Zero;

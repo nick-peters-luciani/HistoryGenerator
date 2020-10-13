@@ -1,32 +1,26 @@
-﻿using HistoryGenerator.Collections;
-using HistoryGenerator.Core;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+﻿using HistoryGenerator.Core.Processing;
+using HistoryGenerator.Core.Settings;
+using HistoryGenerator.Models;
 using System;
+using System.Collections.Generic;
 using System.Drawing;
-using System.IO;
 using System.Reflection;
-using System.Text;
 using System.Windows.Forms;
-using System.Linq;
-using HistoryGenerator.Utility;
 
 namespace HistoryGenerator
 {
 	public class Program
 	{
-		public static SystemManager SystemManager;
 		public static HistoryGeneratorWindow Window;
-		public static World World;
 
-		public static event EventHandler Regenerated;
+		public static event EventHandler<ProcessUnit> Regenerated;
+		public static event EventHandler<ProcessUnit> Rerendered;
+
+		private static ProcessUnit _processUnit;
 
 		[STAThread]
 		static void Main()
 		{
-			SystemManager = new SystemManager();
-			SystemManager.Initialize();
-
 			BuildWindow();
 
 			Application.EnableVisualStyles();
@@ -37,83 +31,81 @@ namespace HistoryGenerator
 		{
 			Window = new HistoryGeneratorWindow();
 
-			var sortedSettings = SystemManager.Settings.OrderBy(s => s.GetType().GetCustomAttribute<SettingsAttribute>().Priority);
-			foreach (object settings in sortedSettings)
+			foreach (KeyValuePair<string, ProcessChain> item in ProcessLoader.LoadedProcessChains)
 			{
-				AddSettings(settings);
+				foreach (Process process in item.Value)
+				{
+					AddSettings(process, item.Key, process.GetType().Name);
+				}
 			}
 		}
 
-		private static void AddSettings(object settings)
+		private static void AddSettings(Process process, string tabName, string groupName)
 		{
-			SettingsAttribute settingsAttribute = settings.GetType().GetCustomAttribute<SettingsAttribute>();
-
-			IntPtr tabHandle = Window.GetTab(settingsAttribute.TabName);
+			IntPtr tabHandle = Window.GetTab(tabName);
 			if (tabHandle == IntPtr.Zero)
 			{
-				tabHandle = Window.AddTab(settingsAttribute.TabName);
+				tabHandle = Window.AddTab(tabName);
 			}
 
-			IntPtr groupHandle = Window.AddGroup(tabHandle, settingsAttribute.GroupName);
+			IntPtr groupHandle = Window.AddGroup(tabHandle, groupName);
 
-			PropertyInfo[] settingProperties = settings.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
-			foreach (PropertyInfo pInfo in settingProperties)
+			IEnumerable<KeyValuePair<PropertyInfo, SettingAttribute>> settings = SettingsManager.GetSettings(process);
+
+			foreach (KeyValuePair<PropertyInfo, SettingAttribute> item in settings)
 			{
-				foreach (Attribute attribute in pInfo.GetCustomAttributes())
+				PropertyInfo pInfo = item.Key;
+				SettingAttribute attribute = item.Value;
+
+				if (attribute is NumberSettingAttribute a)
 				{
-					if (attribute is NumberSettingAttribute a)
-					{
-						Window.AddNumberSetting(groupHandle, pInfo.Name, settings, pInfo.Name, a.MinValue, a.MaxValue, a.Increment, a.Decimals);
-					}
-					else if (attribute is BooleanSettingAttribute)
-					{
-						Window.AddBooleanSetting(groupHandle, pInfo.Name, settings, pInfo.Name);
-					}
-					else if (attribute is ColorSettingAttribute)
-					{
-						Window.AddColorSetting(groupHandle, pInfo.Name, settings, pInfo.Name);
-					}
+					Window.AddNumberSetting(groupHandle, pInfo.Name, process, pInfo.Name, a.MinValue, a.MaxValue, a.Increment, a.Decimals);
+				}
+				else if (attribute is BooleanSettingAttribute)
+				{
+					Window.AddBooleanSetting(groupHandle, pInfo.Name, process, pInfo.Name);
+				}
+				else if (attribute is ColorSettingAttribute)
+				{
+					Window.AddColorSetting(groupHandle, pInfo.Name, process, pInfo.Name);
 				}
 			}
 		}
 
 		public static void Regenerate()
 		{
-			WorldSettings settings = SystemManager.GetSettings<WorldSettings>();
-			World = new World(settings.Width, settings.Height);
-
-			foreach (SystemBase system in SystemManager.Systems)
-			{
-				system.Execute(World);
-			}
-
-			Regenerated?.Invoke(null, EventArgs.Empty);
+			_processUnit = new ProcessUnit();
+			ProcessLoader.LoadedProcessChains["Generate"].Execute(_processUnit);
+			Regenerated?.Invoke(null, _processUnit);
 		}
 
-		public const string SettingsFileExt = ".json";
-		public static void SaveSettings(string filePath)
+		public static void Render()
 		{
-			JObject settingsManifest = new JObject();
+			World world = _processUnit.Get<World>("World");
 
-			foreach (object settings in SystemManager.Settings)
+			if (!_processUnit.HasKey("RenderImage"))
 			{
-				SettingsAttribute settingsAttribute = settings.GetType().GetCustomAttribute<SettingsAttribute>();
-				settingsManifest.Add(settingsAttribute.Key, JObject.FromObject(settings));
+				Bitmap bitmap = new Bitmap(world.Width, world.Height);
+				Graphics graphics = Graphics.FromImage(bitmap);
+				_processUnit.Add("RenderImage", bitmap);
+				_processUnit.Add("RenderGraphics", graphics);
 			}
 
-			FileStream fs = null;
+			_processUnit.Get<Graphics>("RenderGraphics").Clear(Color.White);
+
+			ProcessLoader.LoadedProcessChains["Render"].Execute(_processUnit);
+			Rerendered?.Invoke(null, _processUnit);
+		}
+
+		public static void SaveSettings(string filePath)
+		{
 			try
 			{
-				fs = File.Open(filePath, FileMode.OpenOrCreate);
-				fs.Write(Encoding.UTF8.GetBytes(settingsManifest.ToString(Formatting.Indented)));
+				SettingsManager.SaveSettings(ProcessLoader.LoadedProcesses, filePath);
 			}
 			catch (Exception ex)
 			{
 				MessageBox.Show($"Error: {ex.Message}\n\nDetails:\n\n{ex.StackTrace}");
-			}
-			finally
-			{
-				fs?.Close();
 			}
 		}
 
@@ -121,32 +113,18 @@ namespace HistoryGenerator
 		{
 			try
 			{
-				string content;
-				using (StreamReader reader = new StreamReader(filePath))
-				{
-					content = reader.ReadToEnd();
-				}
-
-				JObject settingsManifest = JObject.Parse(content);
-
-				foreach (object settings in SystemManager.Settings)
-				{
-					SettingsAttribute settingsAttribute = settings.GetType().GetCustomAttribute<SettingsAttribute>();
-					if (settingsManifest.ContainsKey(settingsAttribute.Key))
-					{
-						object newSettings = settingsManifest[settingsAttribute.Key].ToObject(settings.GetType());
-						MiscUtil.CopyProperties(newSettings, settings);
-					}
-				}
-
-				Window.RefreshSettings();
+				SettingsManager.LoadSettings(ProcessLoader.LoadedProcesses, filePath);
 			}
 			catch (Exception ex)
 			{
 				MessageBox.Show($"Error: {ex.Message}\n\nDetails:\n\n{ex.StackTrace}");
+				return;
 			}
 
+			Window.RefreshSettings();
+
 			Regenerate();
+			Render();
 		}
 	}
 }

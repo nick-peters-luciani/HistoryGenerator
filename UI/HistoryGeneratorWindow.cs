@@ -1,4 +1,7 @@
-﻿using HistoryGenerator.UI.Controls;
+﻿using HistoryGenerator.Core.Processing;
+using HistoryGenerator.Core.Settings;
+using HistoryGenerator.Models;
+using HistoryGenerator.UI.Controls;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -10,16 +13,17 @@ namespace HistoryGenerator
 	{
 		private readonly Dictionary<string, IntPtr> _tabHandles = new Dictionary<string, IntPtr>();
 		private readonly List<IntPtr> _settingsHandles = new List<IntPtr>();
+		private Image _graphicsImage;
 
 		public HistoryGeneratorWindow()
 		{
 			InitializeComponent();
-			
+
 			RenderView.Paint += RenderView_Paint;
 			MenuItemSave.Click += MenuItemSave_Click;
 			MenuItemLoad.Click += MenuItemLoad_Click;
 
-			Program.Regenerated += OnRegenerated;
+			Program.Rerendered += OnRendered;
 		}
 
 		public IntPtr GetTab(string name)
@@ -31,7 +35,7 @@ namespace HistoryGenerator
 		{
 			tabControl1.TabPages.Add(name);
 
-			TabPage tabPage = tabControl1.TabPages[tabControl1.TabPages.Count-1];
+			TabPage tabPage = tabControl1.TabPages[tabControl1.TabPages.Count - 1];
 			tabPage.AutoScroll = true;
 
 			_tabHandles[name] = tabPage.Handle;
@@ -64,9 +68,9 @@ namespace HistoryGenerator
 			// Shift panels
 			Control[] controls = new Control[tabPage.Controls.Count];
 			tabPage.Controls.CopyTo(controls, 0);
-			for (int i=0; i<controls.Length; i++)
+			for (int i = 0; i < controls.Length; i++)
 			{
-				tabPage.Controls.SetChildIndex(controls[i], i+1);
+				tabPage.Controls.SetChildIndex(controls[i], i + 1);
 			}
 
 			tabPage.Controls.Add(panel);
@@ -75,7 +79,7 @@ namespace HistoryGenerator
 			return table.Handle;
 		}
 
-		public IntPtr AddNumberSetting(IntPtr groupHandle, string name, double value, double minValue=0, double maxValue=1000, double increment=1, int decimals=0)
+		public IntPtr AddNumberSetting(IntPtr groupHandle, string name, double value, double minValue = 0, double maxValue = 1000, double increment = 1, int decimals = 0)
 		{
 			TableLayoutPanel table = FromHandle(groupHandle) as TableLayoutPanel;
 
@@ -109,7 +113,7 @@ namespace HistoryGenerator
 			return upDown.Handle;
 		}
 
-		public IntPtr AddNumberSetting(IntPtr groupHandle, string name, object dataSource, string dataMember, double minValue=0, double maxValue=1000, double increment=1, int decimals=0)
+		public IntPtr AddNumberSetting(IntPtr groupHandle, string name, object dataSource, string dataMember, double minValue = 0, double maxValue = 1000, double increment = 1, int decimals = 0)
 		{
 			double defaultValue = (double)Convert.ChangeType(dataSource.GetType().GetProperty(dataMember).GetValue(dataSource), typeof(double));
 			IntPtr settingHandle = AddNumberSetting(groupHandle, name, defaultValue, minValue, maxValue, increment, decimals);
@@ -229,20 +233,28 @@ namespace HistoryGenerator
 		private void GenerateButton_Click(object sender, EventArgs e)
 		{
 			Program.Regenerate();
+			Program.Render();
 		}
 
-		private void OnRegenerated(object sender, EventArgs eventArgs)
+		private void RenderButton_Click(object sender, EventArgs e)
 		{
-			RenderView.Size = new Size(Program.World.Width, Program.World.Height);
+			Program.Render();
+		}
+
+		private void OnRendered(object sender, ProcessUnit processUnit)
+		{
+			_graphicsImage = processUnit.Get<Image>("RenderImage");
+
+			World world = processUnit.Get<World>("World");
+			RenderView.Size = new Size(world.Width, world.Height);
+
 			Refresh();
 		}
 
 		private void RenderView_Paint(object sender, PaintEventArgs e)
 		{
-			if (Program.World == null || !Program.World.HasData("GraphicsImage")) return;
-
-			Image image = Program.World.GetData<Image>("GraphicsImage");
-			e.Graphics.DrawImage(image, 0, 0);
+			if (_graphicsImage == null) return;
+			e.Graphics.DrawImage(_graphicsImage, 0, 0);
 		}
 
 		private void MenuItemSave_Click(object sender, EventArgs e)
@@ -259,7 +271,7 @@ namespace HistoryGenerator
 		{
 			SaveFileDialog saveFileDialog = new SaveFileDialog
 			{
-				Filter = $"HistoryGenerator Settings|*{Program.SettingsFileExt}",
+				Filter = $"HistoryGenerator Settings|*{SettingsManager.SettingsFileExt}",
 				Title = "Save Settings"
 			};
 			saveFileDialog.ShowDialog();
@@ -274,13 +286,13 @@ namespace HistoryGenerator
 		{
 			OpenFileDialog openFileDialog = new OpenFileDialog
 			{
-				Filter = $"HistoryGenerator Settings|*{Program.SettingsFileExt}",
+				Filter = $"HistoryGenerator Settings|*{SettingsManager.SettingsFileExt}",
 				Title = "Load Settings"
 			};
 
 			if (openFileDialog.ShowDialog() == DialogResult.OK)
 			{
-				Focus();	// To remove focus from any settings
+				Focus();    // To remove focus from any settings
 				Program.LoadSettings(openFileDialog.FileName);
 			}
 		}
