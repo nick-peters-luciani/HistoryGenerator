@@ -25,6 +25,12 @@ namespace HistoryGenerator.Processes.Generators
 
 		[NumberSetting(MinValue = 0, MaxValue = 5, Increment = 0.1, Decimals = 2)]
 		public double Lacunarity { get; set; } = 1.75;
+
+		[BooleanSetting]
+		public bool ClampEdge { get; set; } = true;
+
+		[NumberSetting(MinValue = 1, MaxValue = 3, Increment = 0.1, Decimals = 2)]
+		public double ClampScale { get; set; } = 1.5;
 		#endregion
 
 		public override void Execute(ProcessUnit processUnit)
@@ -67,7 +73,17 @@ namespace HistoryGenerator.Processes.Generators
 			{
 				for (int y = 0; y < heightmap.Height; y++)
 				{
-					heightmap[x, y] = (heightmap[x, y] - min) / (max - min);
+					double normalizedHeight = (heightmap[x, y] - min) / (max - min);
+
+					if (ClampEdge)
+					{
+						double nx = (double)x/heightmap.Width;
+						double ny = (double)y/heightmap.Height;
+						double edgeValue = Math.Cos((nx-0.5)*Math.PI/ClampScale) * Math.Cos((ny-0.5)*Math.PI/ClampScale);
+						normalizedHeight *= edgeValue;
+					}
+
+					heightmap[x, y] = normalizedHeight;
 				}
 			}
 
