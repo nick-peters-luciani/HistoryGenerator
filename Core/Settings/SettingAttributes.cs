@@ -23,12 +23,11 @@ namespace HistoryGenerator.Core.Settings
 	}
 
 	[AttributeUsage(AttributeTargets.Property)]
-	public class BooleanSettingAttribute : SettingAttribute
-	{
-	}
+	public class BooleanSettingAttribute : SettingAttribute {}
 
 	[AttributeUsage(AttributeTargets.Property)]
-	public class ColorSettingAttribute : SettingAttribute
-	{
-	}
+	public class ColorSettingAttribute : SettingAttribute {}
+
+	[AttributeUsage(AttributeTargets.Property)]
+	public class EnumSettingAttribute : SettingAttribute {}
 }

@@ -219,6 +219,47 @@ namespace HistoryGenerator
 			return settingHandle;
 		}
 
+		public IntPtr AddEnumSetting(IntPtr groupHandle, string name, Enum value)
+		{
+			TableLayoutPanel table = FromHandle(groupHandle) as TableLayoutPanel;
+
+			Label label = new Label
+			{
+				Dock = DockStyle.Fill,
+				Text = name,
+				TextAlign = ContentAlignment.MiddleLeft
+			};
+			table.Controls.Add(label);
+			table.SetRow(label, table.RowCount);
+			table.SetColumn(label, 0);
+
+			ComboBox comboBox = new ComboBox
+			{
+				Dock = DockStyle.Fill,
+				DataSource = value.GetType().GetEnumValues(),
+				SelectedItem = value,
+				DropDownStyle = ComboBoxStyle.DropDownList
+			};
+			table.Controls.Add(comboBox);
+			table.SetRow(comboBox, table.RowCount);
+			table.SetColumn(comboBox, 1);
+
+			table.RowCount++;
+
+			_settingsHandles.Add(comboBox.Handle);
+
+			return comboBox.Handle;
+		}
+
+		public IntPtr AddEnumSetting(IntPtr groupHandle, string name, object dataSource, string dataMember)
+		{
+			Enum defaultValue = (Enum)Convert.ChangeType(dataSource.GetType().GetProperty(dataMember).GetValue(dataSource), typeof(Enum));
+			IntPtr settingHandle = AddEnumSetting(groupHandle, name, defaultValue);
+			Control setting = FromHandle(settingHandle);
+			setting.DataBindings.Add(nameof(ComboBox.SelectedItem), dataSource, dataMember);
+			return settingHandle;
+		}
+
 		public void RefreshSettings()
 		{
 			foreach (IntPtr handle in _settingsHandles)

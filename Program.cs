@@ -69,6 +69,10 @@ namespace HistoryGenerator
 				{
 					Window.AddColorSetting(groupHandle, pInfo.Name, process, pInfo.Name);
 				}
+				else if (attribute is EnumSettingAttribute)
+				{
+					Window.AddEnumSetting(groupHandle, pInfo.Name, process, pInfo.Name);
+				}
 			}
 		}
 

@@ -3,7 +3,6 @@ using HistoryGenerator.Core.Processing;
 using HistoryGenerator.Core.Settings;
 using HistoryGenerator.Models;
 using HistoryGenerator.Processes.Generators;
-using HistoryGenerator.Utility;
 using System.Drawing;
 
 namespace HistoryGenerator.Processes.Renderers
@@ -12,9 +11,6 @@ namespace HistoryGenerator.Processes.Renderers
 	public class ClimateMapRenderer : RenderProcess
 	{
 		#region Settings
-		[BooleanSetting]
-		public bool RenderHeight { get; set; } = true;
-
 		[ColorSetting]
 		public Color JungleColor { get; set; } = Color.FromArgb(60, 100, 0);
 
@@ -43,27 +39,16 @@ namespace HistoryGenerator.Processes.Renderers
 		public override void Render(ProcessUnit processUnit, Bitmap bitmap, Graphics graphics)
 		{
 			Map<ClimateData> climateMap = processUnit.Get<Map<ClimateData>>("ClimateMap");
-			Map<double> heightMap = processUnit.Get<Map<double>>("HeightMap");
 			Map<WaterType> waterMap = processUnit.Get<Map<WaterType>>("WaterMap");
 
-			for (int x = 0; x < heightMap.Width; x++)
+			ForEachPixel(bitmap, (x,y) =>
 			{
-				for (int y = 0; y < heightMap.Height; y++)
-				{
-					Color? color = GetBiomeColor(climateMap[x, y].GetBiome());
-					if (color != null && waterMap[x, y] == WaterType.None)
-					{
-						if (RenderHeight)
-						{
-							color = color.Value.Multiply(MathExtensions.Lerp(0.2f, 1, heightMap[x, y]));
-						}
-						bitmap.SetPixel(x, y, color.Value);
-					}
-				}
-			}
+				if (waterMap[x, y] != WaterType.None) return Color.Transparent;
+				return GetBiomeColor(climateMap[x,y].GetBiome());
+			});
 		}
 
-		private Color? GetBiomeColor(string biome)
+		private Color GetBiomeColor(string biome)
 		{
 			return biome switch
 			{
@@ -75,7 +60,7 @@ namespace HistoryGenerator.Processes.Renderers
 				"BorealForest" => BorealForestColor,
 				"Taiga" => TaigaColor,
 				"Ice" => IceColor,
-				_ => null,
+				_ => Color.Transparent
 			};
 		}
 	}

@@ -28,20 +28,10 @@ namespace HistoryGenerator.Processes.Renderers
 
 			_seaLevel = processUnit.Get<double>("SeaLevel");
 
-			for (int x = 0; x < waterMap.Width; x++)
-			{
-				for (int y = 0; y < waterMap.Height; y++)
-				{
-					Color? color = GetWaterColor(waterMap[x, y], heightMap[x, y]);
-					if (color != null)
-					{
-						bitmap.SetPixel(x, y, color.Value);
-					}
-				}
-			}
+			ForEachPixel(bitmap, (x,y) => GetWaterColor(waterMap[x, y], heightMap[x, y]));
 		}
 
-		public Color? GetWaterColor(WaterType waterType, double height)
+		public Color GetWaterColor(WaterType waterType, double height)
 		{
 			if (waterType == WaterType.Sea)
 			{
@@ -59,7 +49,7 @@ namespace HistoryGenerator.Processes.Renderers
 				return FreshWaterColor;
 			}
 
-			return null;
+			return Color.Transparent;
 		}
 	}
 }

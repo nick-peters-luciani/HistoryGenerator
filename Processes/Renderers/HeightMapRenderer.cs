@@ -18,15 +18,11 @@ namespace HistoryGenerator.Processes.Renderers
 		{
 			Map<double> heightMap = processUnit.Get<Map<double>>("HeightMap");
 
-			for (int x = 0; x < heightMap.Width; x++)
+			ForEachPixel(bitmap, (x,y) =>
 			{
-				for (int y = 0; y < heightMap.Height; y++)
-				{
-					int c = (int)(MathExtensions.Lerp(0.2f, 1, heightMap[x, y]) * 255);
-					Color color = Color.FromArgb(c, c, c).Multiply(Color);
-					bitmap.SetPixel(x, y, color);
-				}
-			}
+				double scale = MathExtensions.Lerp(0.2f, 1, heightMap[x, y]);
+				return Color.Multiply(scale);
+			});
 		}
 	}
 }
