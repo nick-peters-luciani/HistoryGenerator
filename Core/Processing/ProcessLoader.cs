@@ -66,5 +66,11 @@ namespace HistoryGenerator.Core.Processing
 			_loadedProcessChains[processAttribute.ProcessChain].Add(process);
 			_loadedProcesses.Add(process);
 		}
+
+		public static T GetLoadedProcess<T>() where T : Process
+		{
+			T process = (T)LoadedProcesses.FirstOrDefault(process => process is T);
+			return process ?? throw new Exception($"Failed to get loaded process '{typeof(T).FullName}'.");
+		}
 	}
 }
