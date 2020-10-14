@@ -76,8 +76,11 @@ namespace HistoryGenerator.Core.Settings
 
 				foreach (KeyValuePair<PropertyInfo, SettingAttribute> item in GetSettings(settingsObject))
 				{
-					object value = settingsManifest[groupName][item.Key.Name].ToObject(item.Key.PropertyType);
-					item.Key.SetValue(settingsObject, value);
+					if (settingsManifest.ContainsKey(groupName) && settingsManifest[groupName][item.Key.Name] != null)
+					try {
+						object value = settingsManifest[groupName][item.Key.Name].ToObject(item.Key.PropertyType);
+						item.Key.SetValue(settingsObject, value);
+					} catch(Exception) { }
 				}
 			}
 		}
