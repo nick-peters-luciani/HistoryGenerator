@@ -85,6 +85,8 @@ namespace HistoryGenerator
 
 		public static void Render()
 		{
+			if (_processUnit == null) return;
+
 			World world = _processUnit.Get<World>("World");
 
 			if (!_processUnit.HasKey("RenderImage"))
