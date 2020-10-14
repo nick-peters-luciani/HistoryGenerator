@@ -77,10 +77,7 @@ namespace HistoryGenerator.Processes.Generators
 
 					if (ClampEdge)
 					{
-						double nx = (double)x/heightmap.Width;
-						double ny = (double)y/heightmap.Height;
-						double edgeValue = Math.Cos((nx-0.5)*Math.PI/ClampScale) * Math.Cos((ny-0.5)*Math.PI/ClampScale);
-						normalizedHeight *= edgeValue;
+						normalizedHeight *= GetClampValue(x, y, heightmap.Width, heightmap.Height);
 					}
 
 					heightmap[x, y] = normalizedHeight;
@@ -88,6 +85,13 @@ namespace HistoryGenerator.Processes.Generators
 			}
 
 			processUnit.Add("HeightMap", heightmap);
+		}
+
+		public double GetClampValue(int x, int y, int width, int height)
+		{
+			double nx = (double)x/width;
+			double ny = (double)y/height;
+			return Math.Cos((nx-0.5)*Math.PI/ClampScale) * Math.Cos((ny-0.5)*Math.PI/ClampScale);
 		}
 	}
 }
