@@ -57,9 +57,10 @@ namespace HistoryGenerator.Core.Processing
 				LoadProcess(t, seenTypes);
 			}
 
-			if (!_loadedProcessChains.ContainsKey(processAttribute.ProcessChain))
+			string processChainTag = processAttribute.ProcessChain;
+			if (!_loadedProcessChains.ContainsKey(processChainTag))
 			{
-				_loadedProcessChains.Add(processAttribute.ProcessChain, new ProcessChain());
+				_loadedProcessChains.Add(processChainTag, new ProcessChain(processChainTag));
 			}
 
 			Process process = (Process)Activator.CreateInstance(processType);

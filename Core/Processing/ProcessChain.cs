@@ -1,11 +1,20 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Diagnostics;
 
 namespace HistoryGenerator.Core.Processing
 {
 	public class ProcessChain
 	{
+		public readonly string Tag;
+
 		private readonly List<Process> _processes = new List<Process>();
+
+		public ProcessChain(string tag="")
+		{
+			Tag = tag;
+		}
 
 		public void Add(Process process)
 		{
@@ -29,10 +38,22 @@ namespace HistoryGenerator.Core.Processing
 
 		public void Execute(ProcessUnit processUnit)
 		{
+			Console.WriteLine($"Begin execute process chain: {Tag}");
+			Stopwatch chainStopwatch = Stopwatch.StartNew();
+
 			foreach (Process process in _processes)
 			{
+				Console.Write($"Executing process: {process.GetType().FullName}");
+				Stopwatch processStopwatch = Stopwatch.StartNew();
+
 				process.Execute(processUnit);
+
+				processStopwatch.Stop();
+				Console.WriteLine($"\tElapsed ms: {processStopwatch.ElapsedMilliseconds}");
 			}
+
+			chainStopwatch.Stop();
+			Console.WriteLine($"End execute process chain: {Tag}\t Elapsed ms: {chainStopwatch.ElapsedMilliseconds}\n");
 		}
 	}
 }
