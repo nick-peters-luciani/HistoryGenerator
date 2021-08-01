@@ -4,6 +4,7 @@ using HistoryGenerator.Core.Settings;
 using HistoryGenerator.Extras;
 using HistoryGenerator.Models;
 using HistoryGenerator.Utility;
+using System;
 using System.Collections.Generic;
 
 namespace HistoryGenerator.Processes.Generators
@@ -88,12 +89,17 @@ namespace HistoryGenerator.Processes.Generators
 		{
 			return new CharacterTraits
 			{
-				Openness = _rng.Range(0.0, 1.0),
-				Conscientiousness = _rng.Range(0.0, 1.0),
-				Extroversion = _rng.Range(0.0, 1.0),
-				Agreeableness = _rng.Range(0.0, 1.0),
-				Neuroticism = _rng.Range(0.0, 1.0)
+				Openness = GetRandomValue(),
+				Conscientiousness = GetRandomValue(),
+				Extroversion = GetRandomValue(),
+				Agreeableness = GetRandomValue(),
+				Neuroticism = GetRandomValue()
 			};
+		}
+
+		private double GetRandomValue()
+		{
+			return Math.Round(_rng.Range(0.0, 1.0), 2);
 		}
 	}
 }
