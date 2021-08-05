@@ -4,6 +4,7 @@ using HistoryGenerator.Core.Settings;
 using HistoryGenerator.Models;
 using HistoryGenerator.Processes.Generators;
 using System.Drawing;
+using static HistoryGenerator.Models.ClimateData;
 
 namespace HistoryGenerator.Processes.Renderers
 {
@@ -48,18 +49,18 @@ namespace HistoryGenerator.Processes.Renderers
 			});
 		}
 
-		private Color GetBiomeColor(string biome)
+		private Color GetBiomeColor(Biome biome)
 		{
 			return biome switch
 			{
-				"Jungle" => JungleColor,
-				"Savanna" => SavannaColor,
-				"Desert" => DesertColor,
-				"TemperateForest" => TemperateForestColor,
-				"Grassland" => GrasslandColor,
-				"BorealForest" => BorealForestColor,
-				"Taiga" => TaigaColor,
-				"Ice" => IceColor,
+				Biome.Jungle => JungleColor,
+				Biome.Savanna => SavannaColor,
+				Biome.Desert => DesertColor,
+				Biome.TemperateForest => TemperateForestColor,
+				Biome.Grassland => GrasslandColor,
+				Biome.BorealForest => BorealForestColor,
+				Biome.Taiga => TaigaColor,
+				Biome.Ice => IceColor,
 				_ => Color.Transparent
 			};
 		}

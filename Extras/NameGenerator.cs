@@ -44,19 +44,22 @@ namespace HistoryGenerator.Extras
 
 		private static readonly string[] Groups = new string[]
 		{
-			"Kingdom", "Empire", "Faction", "Order", "Tribe"
+			"Kingdom", "Empire", "Faction", "Order", "Tribe", "Nation", "Clan", 
+			"Union", "Guild", "Alliance", "Domain", "Province"
 		};
 
 		private static readonly string[] Prefixes = new string[]
 		{
 			"Nor", "Che", "Wod", "Lak", "Ston", "Fir", "Riv", "Mal", "Lat", "Lon",
-			"Mor", "Sol", "Mon", "Falk", "Mar", "Jul", "Lor", "Fen", "Eth", "Balm"
+			"Mor", "Sol", "Mon", "Falk", "Mar", "Jul", "Lor", "Fen", "Eth", "Balm",
+			"Agu", "Mal", "Chi", "Nu", "At", "Vil", "Kor", "Hya", "Gem", "Xan", "Zu"
 		};
 
 		private static readonly string[] Suffixes = new string[]
 		{
 			"shire", "ia", "land", "set", "ford", "folk", "on", "en", "helm", "karth",
-			"stead", "gen", "reath", "hold", "ude", "hal", "wood", "heart", "fel", "ora"
+			"stead", "gen", "reath", "hold", "ude", "hal", "wood", "heart", "fel", 
+			"ora", "dune", "ita", "eseo", "rado", "in", "us", "lon", "lak", "ini", "seri"
 		};
 	}
 }
