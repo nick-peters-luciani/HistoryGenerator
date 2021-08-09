@@ -27,5 +27,10 @@ namespace HistoryGenerator.Utility
 		{
 			return HashCode.Combine(X,Y);
 		}
+
+		public static Position operator +(Position a, Position b) => new Position(a.X + b.X, a.Y + b.Y);
+		public static Position operator -(Position a, Position b) => new Position(a.X - b.X, a.Y - b.Y);
+		public static Position operator *(Position p, double d) => new Position((int)Math.Round(p.X * d), (int)Math.Round(p.Y * d));
+		public static Position operator /(Position p, double d) => new Position((int)Math.Round(p.X / d), (int)Math.Round(p.Y / d));
 	}
 }
