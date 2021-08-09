@@ -1,23 +1,25 @@
+using HistoryGenerator.Utility;
+
 namespace HistoryGenerator.Models
 {
-	public enum ResourceType { Plant, Animal, Mineral }
-	public enum ExtractionType { Huntable, Forageable, Farmable, Mineable }
-	
-	public struct ResourceData
+	public class ResourceType
 	{
-		public string Name;
-		public double Amount;
-		public double RecoveryRate;
-		public ResourceType ResourceType;
-		public ExtractionType ExtractionType;
+		public enum OriginType { Plant, Animal, Mineral }
+		public enum FulfillmentType { Food, Shelter, Clothing, Fuel, Tools }
 
-		public ResourceData(string name, double amount, double recoveryRate, ResourceType resourceType, ExtractionType extractionType)
-		{
-			Name = name;
-			Amount = amount;
-			RecoveryRate = recoveryRate;
-			ResourceType = resourceType;
-			ExtractionType = extractionType;
-		}
+		public string Name;
+		public OriginType Origin;
+		public FulfillmentType[] Fulfillments;
+		public ClimateData.Biome[] Biomes;
+	}
+
+	public class ResourceData
+	{
+		public ResourceType Type;
+		public Position Location;
+		public double Amount;
+		public int Range;
+
+		public double GrowthRate;
 	}
 }
