@@ -10,6 +10,8 @@ namespace HistoryGenerator.Systems
 	[Process(ProcessChain = "Render", Dependencies = new[] { typeof(CivilizationGenerator), typeof(ClimateMapRenderer) })]
 	public class CivilizationRenderer : RenderProcess
 	{
+		private static Font Font = new Font(SystemFonts.DefaultFont, FontStyle.Bold);
+
 		public override void Render(ProcessUnit processUnit, Bitmap bitmap, Graphics graphics)
 		{
 			List<Civilization> civilizations = processUnit.Get<List<Civilization>>("Civilizations");
@@ -17,9 +19,9 @@ namespace HistoryGenerator.Systems
 			foreach (Civilization civ in civilizations)
 			{
 				float l = civ.Name.Length * 5;
-				graphics.DrawEllipse(Pens.Red, civ.Location.X, civ.Location.Y, 4, 4);
-				graphics.DrawString(civ.Name, SystemFonts.DefaultFont, Brushes.Black, civ.Location.X - l / 2 - 1, civ.Location.Y - 14);
-				graphics.DrawString(civ.Name, SystemFonts.DefaultFont, Brushes.White, civ.Location.X - l / 2, civ.Location.Y - 15);
+				graphics.FillRectangle(Brushes.Yellow, civ.Location.X, civ.Location.Y, 4, 4);
+				graphics.DrawString(civ.Name, Font, Brushes.Black, civ.Location.X - l / 2 - 1, civ.Location.Y - 14);
+				graphics.DrawString(civ.Name, Font, Brushes.White, civ.Location.X - l / 2, civ.Location.Y - 15);
 			}
 		}
 	}
