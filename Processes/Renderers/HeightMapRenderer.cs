@@ -8,7 +8,7 @@ using System.Drawing;
 
 namespace HistoryGenerator.Processes.Renderers
 {
-	[Process(ProcessChain = "Render", Dependencies = new Type[] { typeof(HeightMapGenerator) })]
+	[Process(ProcessChain = "Render", Dependencies = new Type[] { typeof(WorldRenderer), typeof(HeightMapGenerator) })]
 	public class HeightMapRenderer : RenderProcess
 	{
 		[BooleanSetting]
