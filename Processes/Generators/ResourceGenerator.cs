@@ -4,25 +4,19 @@ using HistoryGenerator.Collections;
 using HistoryGenerator.Core.Processing;
 using HistoryGenerator.Core.Settings;
 using HistoryGenerator.Models;
+using HistoryGenerator.Models.Resources;
 using HistoryGenerator.Utility;
 
 namespace HistoryGenerator.Processes.Generators
 {
-	[Process(ProcessChain = "Generate", Dependencies = new[] { typeof(ClimateMapGenerator) })]
+	[Process(ProcessChain = "Generate", Dependencies = new[] { typeof(ClimateMapGenerator), typeof(ResourceSetGenerator) })]
 	public class ResourceGenerator : Process
 	{
 		[NumberSetting(MinValue = int.MinValue, MaxValue = int.MaxValue)]
 		public int Seed { get; set; }
-		
-		public static readonly List<ResourceType> ResourceTypes = new List<ResourceType>()
-		{
-			new ResourceType {
-				Name = "Deer",
-				Origin = ResourceType.OriginType.Animal,
-				Fulfillments = new[] { ResourceType.FulfillmentType.Food },
-				Biomes = new[] { ClimateData.Biome.Grassland, ClimateData.Biome.TemperateForest, ClimateData.Biome.BorealForest }
-			}
-		};
+
+		[NumberSetting(MinValue = 0, MaxValue = 50)]
+		public int ResourceCount { get; set; } = 15;
 
 		private RNG _rng;
 
@@ -30,15 +24,17 @@ namespace HistoryGenerator.Processes.Generators
 		{
 			_rng = new RNG(Seed);
 			
+			ResourceSet resourceSet = processUnit.Get<ResourceSet>("ResourceSet");
 			List<ResourceData> resourceDatas = new List<ResourceData>();
-			for (int i = 0; i < 10; i++)
+			for (int i=0; i<ResourceCount; i++)
 			{
-				Position position = FindLocation(processUnit, ResourceTypes[0].Biomes, resourceDatas);
+				ResourceType resourceType = _rng.ItemInList(resourceSet.Types);
+				Position position = FindLocation(processUnit, resourceType.Biomes, resourceDatas);
 				if (position.Equals(Position.Zero)) continue;
 
 				ResourceData resourceData = new ResourceData
 				{
-					Type = ResourceTypes[0],
+					Type = resourceType,
 					Location = position,
 					Amount = _rng.Range(100, 1000),
 					GrowthRate = _rng.Range(-10, 10),

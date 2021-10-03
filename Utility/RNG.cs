@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace HistoryGenerator.Utility
 {
@@ -38,6 +39,21 @@ namespace HistoryGenerator.Utility
 		{
 			int i = Range(0, list.Count);
 			return list[i];
-		} 
+		}
+
+		public T Enum<T>()
+		{
+			if (!typeof(T).IsEnum) throw new ArgumentException("Type T must be an Enum!", "T");
+			List<T> enumValues = typeof(T).GetEnumValues().OfType<T>().ToList();
+			return ItemInList<T>(enumValues);
+		}
+
+		public T[] Enums<T>(int count)
+		{
+			if (!typeof(T).IsEnum) throw new ArgumentException("Type T must be an Enum!", "T");
+			List<T> enumValues = typeof(T).GetEnumValues().OfType<T>().ToList();
+			if (count > enumValues.Count) throw new ArgumentException("Count must be less than or equal to number of enum values.", "count");
+			return enumValues.OrderBy(v => Guid.NewGuid()).Take(count).ToArray();
+		}
 	}
 }
